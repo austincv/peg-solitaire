@@ -7,3 +7,6 @@ on a board with holes. Some sets use marbles in a board with indentations.
 This is my first personal project using Flutter and I am still learning dart 
 and the flutter framework. Expect multiple revisions and complete overhauls as
 I learn new data structures and framework components.
+
+# demo
+![Demo gif](docs/gifs/peg_solitaire.gif)
