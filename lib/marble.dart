@@ -7,7 +7,7 @@ class Marble extends StatelessWidget {
   final int column;
   final double _sizeFactor = 1.0;
 
-  Marble({@required this.row, @required this.column});
+  Marble(this.row, this.column);
 
   @override
   Widget build(BuildContext context) {

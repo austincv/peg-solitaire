@@ -169,16 +169,11 @@ class _BoardState extends State<Board> {
     );
   }
 
-  TableCell buildTableCell(int row, int column) {
+  TableCell buildCell(int row, int column) {
     bool hasPeg = _hasPeg(row, column);
     bool hasMarble = _hasMarble(row, column);
 
-    Widget peg = hasMarble
-        ? Marble(
-            row: row,
-            column: column,
-          )
-        : getEmptyPeg(row, column);
+    Widget peg = hasMarble ? Marble(row, column) : getEmptyPeg(row, column);
 
     return TableCell(
         child: Container(
@@ -199,7 +194,7 @@ class _BoardState extends State<Board> {
   TableRow buildTableRow(int row, int columns) {
     List<TableCell> cells = new List(columns);
     for (int column = 0; column < columns; column++) {
-      cells[column] = buildTableCell(row, column);
+      cells[column] = buildCell(row, column);
     }
     return TableRow(children: cells);
   }
