@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'constants.dart';
 import 'marble.dart';
 
 class Board extends StatefulWidget {
@@ -181,12 +182,14 @@ class _BoardState extends State<Board> {
         child: Container(
       child: AspectRatio(
         aspectRatio: 1,
-        child: Card(
-          elevation: 0,
-          color: hasPeg ? Colors.grey.shade200 : Colors.grey.shade50,
-          shape: CircleBorder(),
-          child: peg,
-        ),
+        child: hasPeg
+            ? Card(
+                elevation: 0,
+                color: kColorPeg,
+                shape: CircleBorder(),
+                child: peg,
+              )
+            : Container(),
       ),
     ));
   }

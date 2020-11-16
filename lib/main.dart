@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'board.dart';
+import 'constants.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -10,12 +11,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: title,
       home: Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: Center(
-            child: SafeArea(child: Board()),
-          )),
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Center(
+          child: SafeArea(child: Board()),
+        ),
+      ),
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: kColorBackground,
+      ),
     );
   }
 }

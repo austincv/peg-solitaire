@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'constants.dart';
+
 class Marble extends StatelessWidget {
   final int row;
   final int column;
@@ -15,8 +17,8 @@ class Marble extends StatelessWidget {
           width: constraints.maxWidth * this._sizeFactor,
           height: constraints.maxHeight * this._sizeFactor,
           child: Card(
+            color: kColorMarble,
             elevation: 1,
-            color: Colors.teal.shade300,
             shape: CircleBorder(),
           ),
         ),
@@ -24,8 +26,8 @@ class Marble extends StatelessWidget {
           width: constraints.maxWidth * this._sizeFactor,
           height: constraints.maxHeight * this._sizeFactor,
           child: Card(
+            color: kColorMarble,
             elevation: 4,
-            color: Colors.teal.shade300,
             shape: CircleBorder(),
           ),
         ),
