@@ -15,7 +15,11 @@ class MyApp extends StatelessWidget {
           title: Text(title),
         ),
         body: Center(
-          child: SafeArea(child: Board()),
+          child: SafeArea(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Board(),
+          )),
         ),
       ),
       theme: ThemeData.dark().copyWith(
