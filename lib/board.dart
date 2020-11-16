@@ -113,22 +113,19 @@ class _BoardState extends State<Board> {
     '66': false,
   };
 
-  bool _hasPeg({@required int rowIndex, @required int cellIndex}) {
-    return _pegs['$rowIndex$cellIndex'];
+  bool _hasPeg(int row, int column) {
+    return _pegs['$row$column'];
   }
 
-  bool _hasMarble({@required int rowIndex, @required int cellIndex}) {
-    return _marbles['$rowIndex$cellIndex'];
+  bool _hasMarble(int row, int column) {
+    return _marbles['$row$column'];
   }
 
-  TableCell buildTableCell({
-    @required int rowIndex,
-    @required int cellIndex,
-  }) {
-    bool hasPeg = _hasPeg(rowIndex: rowIndex, cellIndex: cellIndex);
-    bool hasMarble = _hasMarble(rowIndex: rowIndex, cellIndex: cellIndex);
-
-    Widget dragTarget = DragTarget<String>(
+  DragTarget getEmptyPeg(int row, int column) {
+    /// Create a drag target on which marbles can be dropped.
+    /// This function defines which marbles can be accepted
+    /// according to the rules of peg solitaire
+    return DragTarget<String>(
       builder: (context, candidateData, rejectedData) {
         return Container();
       },
@@ -136,12 +133,12 @@ class _BoardState extends State<Board> {
         int draggedRow = int.parse(data[0]);
         int draggedColumn = int.parse(data[1]);
 
-        int rowCheck = (draggedRow - rowIndex).abs();
-        int colCheck = (draggedColumn - cellIndex).abs();
+        int rowCheck = (draggedRow - row).abs();
+        int colCheck = (draggedColumn - column).abs();
         if (((rowCheck == 2) & (colCheck == 0)) |
             ((rowCheck == 0) & (colCheck == 2))) {
-          int popRow = (draggedRow + rowIndex) ~/ 2;
-          int popColumn = (draggedColumn + cellIndex) ~/ 2;
+          int popRow = (draggedRow + row) ~/ 2;
+          int popColumn = (draggedColumn + column) ~/ 2;
           if (_marbles['$popRow$popColumn'] == true) {
             print('Marble found at $popRow$popColumn');
             return true;
@@ -151,8 +148,8 @@ class _BoardState extends State<Board> {
           }
         } else {
           print('Cant accept $data marble');
-          print((draggedRow - rowIndex).abs());
-          print((draggedColumn - cellIndex).abs());
+          print((draggedRow - row).abs());
+          print((draggedColumn - column).abs());
           return false;
         }
       },
@@ -160,23 +157,28 @@ class _BoardState extends State<Board> {
         print("Accepted $data");
         int draggedRow = int.parse(data[0]);
         int draggedColumn = int.parse(data[1]);
-        int popRow = (draggedRow + rowIndex) ~/ 2;
-        int popColumn = (draggedColumn + cellIndex) ~/ 2;
+        int popRow = (draggedRow + row) ~/ 2;
+        int popColumn = (draggedColumn + column) ~/ 2;
 
         setState(() {
           _marbles[data] = false;
           _marbles['$popRow$popColumn'] = false;
-          _marbles['$rowIndex$cellIndex'] = true;
+          _marbles['$row$column'] = true;
         });
       },
     );
+  }
+
+  TableCell buildTableCell(int row, int column) {
+    bool hasPeg = _hasPeg(row, column);
+    bool hasMarble = _hasMarble(row, column);
 
     Widget peg = hasMarble
         ? Marble(
-            row: rowIndex,
-            column: cellIndex,
+            row: row,
+            column: column,
           )
-        : dragTarget;
+        : getEmptyPeg(row, column);
 
     return TableCell(
         child: Container(
@@ -194,21 +196,18 @@ class _BoardState extends State<Board> {
     ));
   }
 
-  TableRow buildTableRow(
-      {@required int rowIndex, @required int numberOfCells}) {
-    List<TableCell> rowChildren = new List(numberOfCells);
-    for (int cellIndex in Iterable<int>.generate(numberOfCells)) {
-      rowChildren[cellIndex] =
-          buildTableCell(rowIndex: rowIndex, cellIndex: cellIndex);
+  TableRow buildTableRow(int row, int columns) {
+    List<TableCell> cells = new List(columns);
+    for (int column = 0; column < columns; column++) {
+      cells[column] = buildTableCell(row, column);
     }
-    return TableRow(children: rowChildren);
+    return TableRow(children: cells);
   }
 
-  Table buildTable({@required int rows, @required int columns}) {
+  Table buildTable(int rows, int columns) {
     List<TableRow> tableChildren = new List(rows);
-    for (int rowIndex in Iterable<int>.generate(rows)) {
-      tableChildren[rowIndex] =
-          buildTableRow(rowIndex: rowIndex, numberOfCells: columns);
+    for (int row = 0; row < rows; row++) {
+      tableChildren[row] = buildTableRow(row, columns);
     }
     return Table(children: tableChildren);
   }
@@ -217,7 +216,7 @@ class _BoardState extends State<Board> {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: buildTable(rows: 7, columns: 7),
+      child: buildTable(7, 7),
     );
   }
 }
