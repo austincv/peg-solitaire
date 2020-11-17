@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'board2.dart';
+import 'board.dart';
 import 'constants.dart';
 
 class MyApp extends StatelessWidget {
