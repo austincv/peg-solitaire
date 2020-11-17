@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:peg_solitaire/constants.dart';
 
 class BoardConfiguration {
   final List<List<bool>> holes;
@@ -45,30 +48,71 @@ class _BoardState extends State<Board> {
   BoardFactory boardFactory = BoardFactory();
 
   BoardConfiguration boardConfiguration;
+  final _random = new Random();
+
+  Widget buildSizedBox(Widget child, double size) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: child,
+    );
+  }
 
   Widget buildBoxAtIndexPosition(
       {int rowIndex, int columnIndex, double boxWidth, double boxHeight}) {
     bool isHole = boardConfiguration.holes[rowIndex][columnIndex];
     bool hasPeg = boardConfiguration.pegs[rowIndex][columnIndex];
+    double paddingFactor = 0.05;
 
     Widget nothing = SizedBox(width: boxWidth, height: boxHeight);
     Widget holeWithPeg = SizedBox(
       width: boxWidth,
       height: boxHeight,
-      child: Container(
-        decoration: new BoxDecoration(
-          color: Colors.orange,
-          shape: BoxShape.circle,
+      child: Padding(
+        padding: EdgeInsets.all(boxWidth * paddingFactor),
+        child: Container(
+          decoration: new BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: SizedBox(
+                width: boxWidth * 0.5,
+                height: boxHeight * 0.5,
+                child: Container(
+                  decoration: new BoxDecoration(
+                    color: kColorPegs[_random.nextInt(kColorPegs.length)],
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 5), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                )),
+          ),
         ),
       ),
     );
     Widget hole = SizedBox(
       width: boxWidth,
       height: boxHeight,
-      child: Container(
-        decoration: new BoxDecoration(
-          color: Colors.red,
-          shape: BoxShape.circle,
+      child: Padding(
+        padding: EdgeInsets.all(boxWidth * paddingFactor),
+        child: Container(
+          decoration: new BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: SizedBox(
+                width: boxWidth * 0.5,
+                height: boxHeight * 0.5,
+                child: Container()),
+          ),
         ),
       ),
     );
