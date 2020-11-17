@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class BoardConfiguration {
+  final List<List<bool>> holes;
   final List<List<bool>> pegs;
-  final List<List<bool>> marbles;
 
   final int rows;
   final int columns;
 
-  BoardConfiguration(this.pegs, this.marbles, this.rows, this.columns);
+  BoardConfiguration(this.holes, this.pegs, this.rows, this.columns);
 }
 
 class BoardFactory {
@@ -46,13 +46,13 @@ class _BoardState extends State<Board> {
 
   BoardConfiguration boardConfiguration;
 
-  Widget buildPegs(
+  Widget buildBoxAtIndexPosition(
       {int rowIndex, int columnIndex, double boxWidth, double boxHeight}) {
-    bool isPeg = boardConfiguration.pegs[rowIndex][columnIndex];
-    bool hasMarble = boardConfiguration.marbles[rowIndex][columnIndex];
+    bool isHole = boardConfiguration.holes[rowIndex][columnIndex];
+    bool hasPeg = boardConfiguration.pegs[rowIndex][columnIndex];
 
-    Widget pegDisabled = SizedBox(width: boxWidth, height: boxHeight);
-    Widget pegWithMarble = SizedBox(
+    Widget nothing = SizedBox(width: boxWidth, height: boxHeight);
+    Widget holeWithPeg = SizedBox(
       width: boxWidth,
       height: boxHeight,
       child: Container(
@@ -62,7 +62,7 @@ class _BoardState extends State<Board> {
         ),
       ),
     );
-    Widget pegWithoutMarble = SizedBox(
+    Widget hole = SizedBox(
       width: boxWidth,
       height: boxHeight,
       child: Container(
@@ -73,11 +73,11 @@ class _BoardState extends State<Board> {
       ),
     );
 
-    return isPeg
-        ? hasMarble
-            ? pegWithMarble
-            : pegWithoutMarble
-        : pegDisabled;
+    return isHole
+        ? hasPeg
+            ? holeWithPeg
+            : hole
+        : nothing;
   }
 
   Widget buildBoard(double width, double height) {
@@ -90,7 +90,7 @@ class _BoardState extends State<Board> {
       for (int columnIndex = 0;
           columnIndex < boardConfiguration.columns;
           columnIndex++) {
-        widgets[columnIndex] = buildPegs(
+        widgets[columnIndex] = buildBoxAtIndexPosition(
             rowIndex: rowIndex,
             columnIndex: columnIndex,
             boxWidth: boxWidth,
