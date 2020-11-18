@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:peg_solitaire/constants.dart';
 
@@ -50,7 +48,6 @@ class _BoardState extends State<Board> {
   BoardFactory boardFactory = BoardFactory();
 
   BoardConfiguration boardConfiguration;
-  final _random = new Random();
 
   Widget buildSquareBox(Widget child, double size) {
     return SizedBox(
@@ -62,8 +59,8 @@ class _BoardState extends State<Board> {
 
   Widget buildHoleAtIndexPosition(
       int rowIndex, int columnIndex, double width, double height) {
-    /// Create a drag target on which marbles can be dropped.
-    /// This function defines which marbles can be accepted
+    /// Create a drag target on which pegs can be dropped.
+    /// This function defines which pegs can be accepted
     /// according to the rules of peg solitaire
     return DragTarget<List<int>>(
       builder: (context, candidateData, rejectedData) {
@@ -100,21 +97,21 @@ class _BoardState extends State<Board> {
           int popRow = (draggedRow + rowIndex) ~/ 2;
           int popColumn = (draggedColumn + columnIndex) ~/ 2;
           if (boardConfiguration.pegs[popRow][popColumn] == true) {
-            print('Marble found at $popRow$popColumn');
+            print('Middle Peg can be removed at [$popRow, $popColumn]');
             return true;
           } else {
-            print('Marble not found at $popRow$popColumn');
+            print('Middle Peg not available at [$popRow, $popColumn]');
             return false;
           }
         } else {
-          print('Cant accept $data marble');
+          print('Cant insert peg at $data');
           print((draggedRow - rowIndex).abs());
           print((draggedColumn - columnIndex).abs());
           return false;
         }
       },
       onAccept: (data) {
-        print("Accepted $data");
+        print("Peg inserted at $data");
         int draggedRow = data[0];
         int draggedColumn = data[1];
         int popRow = (draggedRow + rowIndex) ~/ 2;
@@ -125,6 +122,12 @@ class _BoardState extends State<Board> {
           boardConfiguration.pegs[popRow][popColumn] = false;
           boardConfiguration.pegs[rowIndex][columnIndex] = true;
         });
+
+        if (isGameOver()) {
+          print("Game Over!");
+        } else {
+          print("Waiting for next step");
+        }
       },
     );
   }
@@ -165,6 +168,76 @@ class _BoardState extends State<Board> {
             : buildHoleAtIndexPosition(
                 rowIndex, columnIndex, boxWidth, boxHeight)
         : nothing;
+  }
+
+  bool isPegAcceptableInHole(
+      int rowPeg, int columnPeg, int rowHole, int columnHole) {
+    if (!boardConfiguration.pegs[rowPeg][columnPeg]) {
+      return false; // peg does not exist
+    }
+
+    if (!boardConfiguration.holes[rowHole][columnHole]) {
+      return false; // peg does not exist
+    }
+
+    print("Is peg[$rowPeg, $columnPeg] acceptable in [$rowHole, $columnHole]");
+    int rowCheck = (rowPeg - rowHole).abs();
+    int colCheck = (columnPeg - columnHole).abs();
+    print("row check $rowCheck col check $colCheck");
+    if (((rowCheck == 2) & (colCheck == 0)) |
+        ((rowCheck == 0) & (colCheck == 2))) {
+      int rowMiddle = (rowPeg + rowHole) ~/ 2;
+      int columnMiddle = (columnPeg + columnHole) ~/ 2;
+      bool middlePegExists = boardConfiguration.pegs[rowMiddle][columnMiddle];
+      print(
+          "Returning $rowMiddle$columnMiddle middlePegExists $middlePegExists");
+      return middlePegExists; // it is acceptable if the middle peg exists
+
+    }
+    return false;
+  }
+
+  bool isGameOver() {
+    int counter = 0;
+    for (int rowIndex = 0; rowIndex < boardConfiguration.rows; rowIndex++) {
+      for (int columnIndex = 0;
+          columnIndex < boardConfiguration.columns;
+          columnIndex++) {
+        bool holeExists = boardConfiguration.holes[rowIndex][columnIndex];
+        bool holeIsEmpty = !boardConfiguration.pegs[rowIndex][columnIndex];
+        if (holeExists & holeIsEmpty) {
+          counter++;
+          if (rowIndex + 2 < boardConfiguration.rows) {
+            if (isPegAcceptableInHole(
+                rowIndex + 2, columnIndex, rowIndex, columnIndex)) {
+              return false;
+            }
+          }
+
+          if (rowIndex - 2 >= 0) {
+            if (isPegAcceptableInHole(
+                rowIndex - 2, columnIndex, rowIndex, columnIndex)) {
+              return false;
+            }
+          }
+
+          if (columnIndex + 2 < boardConfiguration.columns) {
+            if (isPegAcceptableInHole(
+                rowIndex, columnIndex + 2, rowIndex, columnIndex)) {
+              return false;
+            }
+          }
+          if (columnIndex - 2 >= 0) {
+            if (isPegAcceptableInHole(
+                rowIndex, columnIndex - 2, rowIndex, columnIndex)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    print("Found $counter holes");
+    return true;
   }
 
   Widget buildBoard(double width, double height) {
