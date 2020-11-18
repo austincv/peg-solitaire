@@ -35,7 +35,24 @@ class BoardFactory {
   ];
 
   BoardConfiguration get(int version) {
-    return boardConfigurations[version];
+    BoardConfiguration config = boardConfigurations[version];
+
+    // deep copy
+    int length = config.rows * config.columns;
+    List<List<bool>> holes = new List<List<bool>>(length);
+    List<List<bool>> pegs = new List<List<bool>>(length);
+    for (int row = 0; row < config.rows; row++) {
+      List<bool> holeRow = new List<bool>(config.columns);
+      List<bool> pegRow = new List<bool>(config.columns);
+      for (int column = 0; column < config.columns; column++) {
+        holeRow[column] = config.holes[row][column];
+        pegRow[column] = config.pegs[row][column];
+      }
+      holes[row] = holeRow;
+      pegs[row] = pegRow;
+    }
+
+    return BoardConfiguration(holes, pegs, config.rows, config.columns);
   }
 }
 
@@ -121,13 +138,16 @@ class _BoardState extends State<Board> {
           boardConfiguration.pegs[draggedRow][draggedColumn] = false;
           boardConfiguration.pegs[popRow][popColumn] = false;
           boardConfiguration.pegs[rowIndex][columnIndex] = true;
-        });
 
-        if (isGameOver()) {
-          print("Game Over!");
-        } else {
-          print("Waiting for next step");
-        }
+          if (isGameOver()) {
+            print("Game Over!");
+            print(boardConfiguration.pegs);
+            resetBoard();
+            print(boardConfiguration.pegs);
+          } else {
+            print("Waiting for next step");
+          }
+        });
       },
     );
   }
@@ -238,6 +258,10 @@ class _BoardState extends State<Board> {
     }
     print("Found $counter holes");
     return true;
+  }
+
+  void resetBoard() {
+    boardConfiguration = boardFactory.get(0);
   }
 
   Widget buildBoard(double width, double height) {
