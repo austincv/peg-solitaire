@@ -9,4 +9,6 @@ and the flutter framework. Expect multiple revisions and complete overhauls as
 I learn new data structures and framework components.
 
 # demo
+Go to [austincv.com/peg-solitaire](https://www.austincv.com/peg-solitaire) for a demo
+
 ![Demo gif](docs/gifs/peg_solitaire.gif)
