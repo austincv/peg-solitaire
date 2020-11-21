@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 const Color kColorHole = Color(0xFF393e46);
+const Color kColorHoleAcceptPeg = Color(0xFF00cc66);
+const Color kColorHoleCantAcceptPeg = Color(0xFFd90368);
 const Color kColorPeg = Color(0xFFfd7014);
 const Color kColorBackground = Color(0xFF222831);
 

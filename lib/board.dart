@@ -66,6 +66,10 @@ class _BoardState extends State<Board> {
 
   BoardConfiguration boardConfiguration;
 
+  bool isHovering = false;
+  bool isValidHover = false;
+  List<int> hoverIndex = new List(2);
+
   Widget buildSquareBox(Widget child, double size) {
     return SizedBox(
       width: size,
@@ -82,7 +86,13 @@ class _BoardState extends State<Board> {
     return DragTarget<List<int>>(
       builder: (context, candidateData, rejectedData) {
         double paddingFactor = 0.05;
-
+        Color color = kColorHole;
+        if (isHovering) {
+          if ((rowIndex == hoverIndex[0]) & (columnIndex == hoverIndex[1])) {
+            color =
+                isValidHover ? kColorHoleAcceptPeg : kColorHoleCantAcceptPeg;
+          }
+        }
         return SizedBox(
           width: width,
           height: height,
@@ -90,7 +100,7 @@ class _BoardState extends State<Board> {
             padding: EdgeInsets.all(width * paddingFactor),
             child: Container(
               decoration: new BoxDecoration(
-                color: kColorHole,
+                color: color,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -103,41 +113,45 @@ class _BoardState extends State<Board> {
           ),
         );
       },
-      onWillAccept: (data) {
-        int draggedRow = data[0];
-        int draggedColumn = data[1];
+      onWillAccept: (peg) {
+        bool isAcceptable =
+            isPegAcceptableInHole(peg[0], peg[1], rowIndex, columnIndex);
 
-        int rowCheck = (draggedRow - rowIndex).abs();
-        int colCheck = (draggedColumn - columnIndex).abs();
-        if (((rowCheck == 2) & (colCheck == 0)) |
-            ((rowCheck == 0) & (colCheck == 2))) {
-          int popRow = (draggedRow + rowIndex) ~/ 2;
-          int popColumn = (draggedColumn + columnIndex) ~/ 2;
-          if (boardConfiguration.pegs[popRow][popColumn] == true) {
-            print('Middle Peg can be removed at [$popRow, $popColumn]');
-            return true;
-          } else {
-            print('Middle Peg not available at [$popRow, $popColumn]');
-            return false;
-          }
+        if (isAcceptable) {
+          setState(() {
+            hoverIndex[0] = rowIndex;
+            hoverIndex[1] = columnIndex;
+            isHovering = true;
+            isValidHover = true;
+          });
         } else {
-          print('Cant insert peg at $data');
-          print((draggedRow - rowIndex).abs());
-          print((draggedColumn - columnIndex).abs());
-          return false;
+          setState(() {
+            hoverIndex[0] = rowIndex;
+            hoverIndex[1] = columnIndex;
+            isHovering = true;
+            isValidHover = false;
+          });
         }
+
+        return isAcceptable;
       },
-      onAccept: (data) {
-        print("Peg inserted at $data");
-        int draggedRow = data[0];
-        int draggedColumn = data[1];
-        int popRow = (draggedRow + rowIndex) ~/ 2;
-        int popColumn = (draggedColumn + columnIndex) ~/ 2;
+      onLeave: (peg) {
+        setState(() {
+          isHovering = false;
+        });
+      },
+      onAccept: (peg) {
+        print("Peg inserted at $peg");
+        int pegRow = peg[0];
+        int pegColumn = peg[1];
+        int pegToRemoveRow = (pegRow + rowIndex) ~/ 2;
+        int pegToRemoveColumn = (pegColumn + columnIndex) ~/ 2;
 
         setState(() {
-          boardConfiguration.pegs[draggedRow][draggedColumn] = false;
-          boardConfiguration.pegs[popRow][popColumn] = false;
+          boardConfiguration.pegs[pegRow][pegColumn] = false;
+          boardConfiguration.pegs[pegToRemoveRow][pegToRemoveColumn] = false;
           boardConfiguration.pegs[rowIndex][columnIndex] = true;
+          isHovering = false;
 
           if (isGameOver()) {
             print("Game Over!");
