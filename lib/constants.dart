@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const String kTitle = 'Peg Solitaire';
+
 const Color kColorHole = Color(0xFF393e46);
 const Color kColorHoleAcceptPeg = Color(0xFF00cc66);
 const Color kColorHoleCantAcceptPeg = Color(0xFFd90368);

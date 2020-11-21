@@ -66,6 +66,7 @@ class _BoardState extends State<Board> {
 
   BoardConfiguration boardConfiguration;
 
+  bool isGameOver = false;
   bool isHovering = false;
   bool isValidHover = false;
   List<int> hoverIndex = new List(2);
@@ -115,7 +116,7 @@ class _BoardState extends State<Board> {
       },
       onWillAccept: (peg) {
         bool isAcceptable =
-            isPegAcceptableInHole(peg[0], peg[1], rowIndex, columnIndex);
+            checkIfPegAcceptableInHole(peg[0], peg[1], rowIndex, columnIndex);
 
         if (isAcceptable) {
           setState(() {
@@ -153,11 +154,9 @@ class _BoardState extends State<Board> {
           boardConfiguration.pegs[rowIndex][columnIndex] = true;
           isHovering = false;
 
-          if (isGameOver()) {
+          isGameOver = checkGameOver();
+          if (isGameOver) {
             print("Game Over!");
-            print(boardConfiguration.pegs);
-            resetBoard();
-            print(boardConfiguration.pegs);
           } else {
             print("Waiting for next step");
           }
@@ -204,7 +203,7 @@ class _BoardState extends State<Board> {
         : nothing;
   }
 
-  bool isPegAcceptableInHole(
+  bool checkIfPegAcceptableInHole(
       int rowPeg, int columnPeg, int rowHole, int columnHole) {
     if (!boardConfiguration.pegs[rowPeg][columnPeg]) {
       return false; // peg does not exist
@@ -231,7 +230,7 @@ class _BoardState extends State<Board> {
     return false;
   }
 
-  bool isGameOver() {
+  bool checkGameOver() {
     int counter = 0;
     for (int rowIndex = 0; rowIndex < boardConfiguration.rows; rowIndex++) {
       for (int columnIndex = 0;
@@ -242,27 +241,27 @@ class _BoardState extends State<Board> {
         if (holeExists & holeIsEmpty) {
           counter++;
           if (rowIndex + 2 < boardConfiguration.rows) {
-            if (isPegAcceptableInHole(
+            if (checkIfPegAcceptableInHole(
                 rowIndex + 2, columnIndex, rowIndex, columnIndex)) {
               return false;
             }
           }
 
           if (rowIndex - 2 >= 0) {
-            if (isPegAcceptableInHole(
+            if (checkIfPegAcceptableInHole(
                 rowIndex - 2, columnIndex, rowIndex, columnIndex)) {
               return false;
             }
           }
 
           if (columnIndex + 2 < boardConfiguration.columns) {
-            if (isPegAcceptableInHole(
+            if (checkIfPegAcceptableInHole(
                 rowIndex, columnIndex + 2, rowIndex, columnIndex)) {
               return false;
             }
           }
           if (columnIndex - 2 >= 0) {
-            if (isPegAcceptableInHole(
+            if (checkIfPegAcceptableInHole(
                 rowIndex, columnIndex - 2, rowIndex, columnIndex)) {
               return false;
             }
@@ -306,12 +305,44 @@ class _BoardState extends State<Board> {
       boardConfiguration = boardFactory.get(0);
     }
 
-    return AspectRatio(
-      aspectRatio: 1,
-      child: LayoutBuilder(
-        builder: (context, constraints) =>
-            buildBoard(constraints.maxWidth, constraints.maxHeight),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(kTitle),
       ),
+      body: Center(
+        child: SafeArea(
+            child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: LayoutBuilder(
+              builder: (context, constraints) =>
+                  buildBoard(constraints.maxWidth, constraints.maxHeight),
+            ),
+          ),
+        )),
+      ),
+      floatingActionButton: isGameOver
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                setState(() {
+                  resetBoard();
+                  isGameOver = false;
+                });
+              },
+              label: Text('Game Over'),
+              icon: Icon(Icons.autorenew),
+              backgroundColor: kColorHoleCantAcceptPeg,
+            )
+          : FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  resetBoard();
+                });
+              },
+              child: Icon(Icons.autorenew),
+              backgroundColor: kColorPeg,
+            ),
     );
   }
 }

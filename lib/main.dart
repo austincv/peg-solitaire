@@ -3,25 +3,21 @@ import 'package:flutter/material.dart';
 import 'board.dart';
 import 'constants.dart';
 
-class MyApp extends StatelessWidget {
+class PegSolitaire extends StatefulWidget {
+  @override
+  _PegSolitaireState createState() => _PegSolitaireState();
+}
+
+class _PegSolitaireState extends State<PegSolitaire> {
+  Board board = Board();
+
   @override
   Widget build(BuildContext context) {
-    final title = 'Peg Solitaire';
+    final title = kTitle;
 
     return MaterialApp(
       title: title,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Center(
-          child: SafeArea(
-              child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Board(),
-          )),
-        ),
-      ),
+      home: Board(),
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: kColorBackground,
       ),
@@ -30,5 +26,5 @@ class MyApp extends StatelessWidget {
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(PegSolitaire());
 }
