@@ -213,17 +213,16 @@ class _BoardState extends State<Board> {
       return false; // peg does not exist
     }
 
-    print("Is peg[$rowPeg, $columnPeg] acceptable in [$rowHole, $columnHole]");
+    print("peg[$rowPeg, $columnPeg] hovering at hole[$rowHole, $columnHole]");
     int rowCheck = (rowPeg - rowHole).abs();
     int colCheck = (columnPeg - columnHole).abs();
-    print("row check $rowCheck col check $colCheck");
+    print("row,column distance: [$rowCheck, $colCheck]");
     if (((rowCheck == 2) & (colCheck == 0)) |
         ((rowCheck == 0) & (colCheck == 2))) {
       int rowMiddle = (rowPeg + rowHole) ~/ 2;
       int columnMiddle = (columnPeg + columnHole) ~/ 2;
       bool middlePegExists = boardConfiguration.pegs[rowMiddle][columnMiddle];
-      print(
-          "Returning $rowMiddle$columnMiddle middlePegExists $middlePegExists");
+      print("peg[$rowMiddle,$columnMiddle] can be removed: $middlePegExists");
       return middlePegExists; // it is acceptable if the middle peg exists
 
     }
@@ -231,7 +230,6 @@ class _BoardState extends State<Board> {
   }
 
   bool checkGameOver() {
-    int counter = 0;
     for (int rowIndex = 0; rowIndex < boardConfiguration.rows; rowIndex++) {
       for (int columnIndex = 0;
           columnIndex < boardConfiguration.columns;
@@ -239,7 +237,6 @@ class _BoardState extends State<Board> {
         bool holeExists = boardConfiguration.holes[rowIndex][columnIndex];
         bool holeIsEmpty = !boardConfiguration.pegs[rowIndex][columnIndex];
         if (holeExists & holeIsEmpty) {
-          counter++;
           if (rowIndex + 2 < boardConfiguration.rows) {
             if (checkIfPegAcceptableInHole(
                 rowIndex + 2, columnIndex, rowIndex, columnIndex)) {
@@ -269,7 +266,6 @@ class _BoardState extends State<Board> {
         }
       }
     }
-    print("Found $counter holes");
     return true;
   }
 
