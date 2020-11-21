@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'constants.dart';
+import '../constants.dart';
+import 'configuration.dart';
 
 class Peg extends StatelessWidget {
-  final int row;
-  final int column;
-  final double width;
-  final double height;
+  final Index index;
+  final Size size;
 
-  Peg(this.row, this.column, this.width, this.height);
+  Peg(this.index, this.size);
 
   @override
   Widget build(BuildContext context) {
     return Draggable(
       child: SizedBox(
-        width: width,
-        height: height,
+        width: size.width,
+        height: size.height,
         child: Card(
           color: kColorPeg,
           elevation: 1,
@@ -23,8 +22,8 @@ class Peg extends StatelessWidget {
         ),
       ),
       feedback: SizedBox(
-        width: width,
-        height: height,
+        width: size.width,
+        height: size.height,
         child: Card(
           color: kColorPeg,
           elevation: 4,
@@ -32,7 +31,7 @@ class Peg extends StatelessWidget {
         ),
       ),
       childWhenDragging: Container(),
-      data: [row, column],
+      data: index,
     );
   }
 }

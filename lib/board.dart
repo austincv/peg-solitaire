@@ -3,7 +3,7 @@ import 'package:peg_solitaire/constants.dart';
 
 import 'boards/configuration.dart';
 import 'boards/factory.dart';
-import 'peg.dart';
+import 'boards/peg.dart';
 
 class Board extends StatefulWidget {
   @override
@@ -20,17 +20,16 @@ class _BoardState extends State<Board> {
   bool isValidHover = false;
   Index hoverIndex;
 
-  Widget buildHoleAtIndexPosition(Index index, Size size) {
+  Widget buildHoleAtIndex(Index index, Size size) {
     /// Create a drag target on which pegs can be dropped.
     /// This function defines which pegs can be accepted
     /// according to the rules of peg solitaire
-    return DragTarget<List<int>>(
+    return DragTarget<Index>(
       builder: (context, candidateData, rejectedData) {
         double paddingFactor = 0.05;
         Color color = kColorHole;
         if (isHovering) {
-          if ((index.row == hoverIndex.row) &
-              (index.column == hoverIndex.column)) {
+          if (index == hoverIndex) {
             color =
                 isValidHover ? kColorHoleAcceptPeg : kColorHoleCantAcceptPeg;
           }
@@ -56,8 +55,8 @@ class _BoardState extends State<Board> {
         );
       },
       onWillAccept: (peg) {
-        bool isAcceptable = boardConfiguration.checkIfPegAcceptableInHole(
-            Index(peg[0], peg[1]), index);
+        bool isAcceptable =
+            boardConfiguration.checkIfPegAcceptableInHole(peg, index);
 
         if (isAcceptable) {
           setState(() {
@@ -82,13 +81,11 @@ class _BoardState extends State<Board> {
       },
       onAccept: (peg) {
         print("Peg inserted at $peg");
-        int pegRow = peg[0];
-        int pegColumn = peg[1];
-        int pegToRemoveRow = (pegRow + index.row) ~/ 2;
-        int pegToRemoveColumn = (pegColumn + index.column) ~/ 2;
+        int pegToRemoveRow = (peg.row + index.row) ~/ 2;
+        int pegToRemoveColumn = (peg.column + index.column) ~/ 2;
 
         setState(() {
-          boardConfiguration.pegs[pegRow][pegColumn] = false;
+          boardConfiguration.pegs[peg.row][peg.column] = false;
           boardConfiguration.pegs[pegToRemoveRow][pegToRemoveColumn] = false;
           boardConfiguration.pegs[index.row][index.column] = true;
           isHovering = false;
@@ -104,12 +101,13 @@ class _BoardState extends State<Board> {
     );
   }
 
-  Widget buildHoleWithPegAtIndexPosition(Index index, Size size) {
+  Widget buildHoleWithPegAtIndex(Index index, Size size) {
     double paddingFactor = 0.05;
+    double reduceFactor = 0.8;
+    Size pegSize = Size(size.width * reduceFactor, size.height * reduceFactor);
 
-    return SizedBox(
-      width: size.width,
-      height: size.height,
+    return SizedBox.fromSize(
+      size: size,
       child: Padding(
         padding: EdgeInsets.all(size.width * paddingFactor),
         child: Container(
@@ -118,15 +116,14 @@ class _BoardState extends State<Board> {
             shape: BoxShape.circle,
           ),
           child: Center(
-            child: Peg(
-                index.row, index.column, size.width * 0.8, size.height * 0.8),
+            child: Peg(index, pegSize),
           ),
         ),
       ),
     );
   }
 
-  Widget buildBoxAtIndexPosition(Index index, Size size) {
+  Widget buildBoxAtIndex(Index index, Size size) {
     bool isHole = boardConfiguration.holes[index.row][index.column];
     bool hasPeg = boardConfiguration.pegs[index.row][index.column];
 
@@ -134,8 +131,8 @@ class _BoardState extends State<Board> {
 
     return isHole
         ? hasPeg
-            ? buildHoleWithPegAtIndexPosition(index, size)
-            : buildHoleAtIndexPosition(index, size)
+            ? buildHoleWithPegAtIndex(index, size)
+            : buildHoleAtIndex(index, size)
         : nothing;
   }
 
@@ -144,8 +141,8 @@ class _BoardState extends State<Board> {
   }
 
   Widget buildBoard(Size size) {
-    double boxWidth = size.width / boardConfiguration.numberOfColumns;
-    double boxHeight = size.height / boardConfiguration.numberOfRows;
+    Size boxSize = Size(size.width / boardConfiguration.numberOfColumns,
+        size.height / boardConfiguration.numberOfRows);
 
     List<Row> rows = new List<Row>(boardConfiguration.numberOfRows);
     for (int rowIndex = 0;
@@ -156,8 +153,8 @@ class _BoardState extends State<Board> {
       for (int columnIndex = 0;
           columnIndex < boardConfiguration.numberOfColumns;
           columnIndex++) {
-        widgets[columnIndex] = buildBoxAtIndexPosition(
-            Index(rowIndex, columnIndex), Size(boxWidth, boxHeight));
+        widgets[columnIndex] =
+            buildBoxAtIndex(Index(rowIndex, columnIndex), boxSize);
       }
       rows[rowIndex] = Row(
         children: widgets,

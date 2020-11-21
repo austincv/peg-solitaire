@@ -3,6 +3,15 @@ class Index {
   final int column;
 
   Index(this.row, this.column);
+
+  @override
+  bool operator ==(other) {
+    return ((other.row == row) & (other.column == column));
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
 }
 
 class BoardConfiguration {
