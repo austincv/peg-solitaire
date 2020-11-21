@@ -289,10 +289,20 @@ class _BoardState extends State<Board> {
             boxWidth: boxWidth,
             boxHeight: boxHeight);
       }
-      rows[rowIndex] = Row(children: widgets);
+      rows[rowIndex] = Row(
+        children: widgets,
+        mainAxisAlignment: MainAxisAlignment.center,
+      );
     }
 
-    return Column(children: rows);
+    return Column(children: rows, mainAxisAlignment: MainAxisAlignment.center);
+  }
+
+  Widget buildLayout(context, constraints) {
+    double boardSideLength = (constraints.maxWidth < constraints.maxHeight)
+        ? constraints.maxWidth
+        : constraints.maxHeight;
+    return buildBoard(boardSideLength * 0.9, boardSideLength * 0.9);
   }
 
   @override
@@ -302,43 +312,40 @@ class _BoardState extends State<Board> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(kTitle),
-      ),
-      body: Center(
-        child: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: LayoutBuilder(
-              builder: (context, constraints) =>
-                  buildBoard(constraints.maxWidth, constraints.maxHeight),
-            ),
-          ),
-        )),
-      ),
-      floatingActionButton: isGameOver
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                setState(() {
-                  resetBoard();
-                  isGameOver = false;
-                });
-              },
-              label: Text('Game Over'),
-              icon: Icon(Icons.autorenew),
-              backgroundColor: kColorHoleCantAcceptPeg,
-            )
-          : FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  resetBoard();
-                });
-              },
-              child: Icon(Icons.autorenew),
-              backgroundColor: kColorPeg,
-            ),
-    );
+        appBar: AppBar(
+          title: Text(kTitle),
+          actions: [
+            isGameOver
+                ? RaisedButton(
+                    color: kGameOver,
+                    onPressed: () {
+                      setState(() {
+                        resetBoard();
+                        isGameOver = false;
+                      });
+                    },
+                    child: FittedBox(
+                        child: Icon(
+                      Icons.autorenew,
+                    )),
+                  )
+                : RaisedButton(
+                    color: kTitleButton,
+                    onPressed: () {
+                      setState(() {
+                        resetBoard();
+                      });
+                    },
+                    child: FittedBox(
+                      child: Icon(
+                        Icons.autorenew,
+                      ),
+                    ),
+                  )
+          ],
+        ),
+        body: LayoutBuilder(
+          builder: buildLayout,
+        ));
   }
 }
