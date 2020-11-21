@@ -12,6 +12,11 @@ class Index {
   @override
   // TODO: implement hashCode
   int get hashCode => super.hashCode;
+
+  @override
+  String toString() {
+    return "Index($row,$column)";
+  }
 }
 
 class BoardConfiguration {
@@ -24,7 +29,7 @@ class BoardConfiguration {
   BoardConfiguration(
       this.holes, this.pegs, this.numberOfRows, this.numberOfColumns);
 
-  bool checkIfPegAcceptableInHole(Index peg, Index hole) {
+  bool checkIfPegIsDroppableInHole(Index peg, Index hole) {
     if (!pegs[peg.row][peg.column]) {
       return false; // peg does not exist
     }
@@ -53,27 +58,27 @@ class BoardConfiguration {
         bool holeIsEmpty = !pegs[rowIndex][columnIndex];
         if (holeExists & holeIsEmpty) {
           if (rowIndex + 2 < numberOfRows) {
-            if (checkIfPegAcceptableInHole(Index(rowIndex + 2, columnIndex),
+            if (checkIfPegIsDroppableInHole(Index(rowIndex + 2, columnIndex),
                 Index(rowIndex, columnIndex))) {
               return false;
             }
           }
 
           if (rowIndex - 2 >= 0) {
-            if (checkIfPegAcceptableInHole(Index(rowIndex - 2, columnIndex),
+            if (checkIfPegIsDroppableInHole(Index(rowIndex - 2, columnIndex),
                 Index(rowIndex, columnIndex))) {
               return false;
             }
           }
 
           if (columnIndex + 2 < numberOfColumns) {
-            if (checkIfPegAcceptableInHole(Index(rowIndex, columnIndex + 2),
+            if (checkIfPegIsDroppableInHole(Index(rowIndex, columnIndex + 2),
                 Index(rowIndex, columnIndex))) {
               return false;
             }
           }
           if (columnIndex - 2 >= 0) {
-            if (checkIfPegAcceptableInHole(Index(rowIndex, columnIndex - 2),
+            if (checkIfPegIsDroppableInHole(Index(rowIndex, columnIndex - 2),
                 Index(rowIndex, columnIndex))) {
               return false;
             }

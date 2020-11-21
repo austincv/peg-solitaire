@@ -16,9 +16,9 @@ class _BoardState extends State<Board> {
   BoardConfiguration boardConfiguration;
 
   bool isGameOver = false;
-  bool isHovering = false;
-  bool isValidHover = false;
-  Index hoverIndex;
+  bool isPegBeingDragged = false;
+  bool isPegDroppableOnTheHoleBelow = false;
+  Index indexOfPegBeingDragged;
 
   Widget buildHoleAtIndex(Index index, Size size) {
     /// Create a drag target on which pegs can be dropped.
@@ -28,10 +28,11 @@ class _BoardState extends State<Board> {
       builder: (context, candidateData, rejectedData) {
         double paddingFactor = 0.05;
         Color color = kColorHole;
-        if (isHovering) {
-          if (index == hoverIndex) {
-            color =
-                isValidHover ? kColorHoleAcceptPeg : kColorHoleCantAcceptPeg;
+        if (isPegBeingDragged) {
+          if (index == indexOfPegBeingDragged) {
+            color = isPegDroppableOnTheHoleBelow
+                ? kColorHoleDroppable
+                : kColorHoleNotDroppable;
           }
         }
         return SizedBox(
@@ -55,32 +56,32 @@ class _BoardState extends State<Board> {
         );
       },
       onWillAccept: (peg) {
-        bool isAcceptable =
-            boardConfiguration.checkIfPegAcceptableInHole(peg, index);
+        bool isPegDroppableInHole =
+            boardConfiguration.checkIfPegIsDroppableInHole(peg, index);
 
-        if (isAcceptable) {
+        if (isPegDroppableInHole) {
           setState(() {
-            hoverIndex = index;
-            isHovering = true;
-            isValidHover = true;
+            indexOfPegBeingDragged = index;
+            isPegBeingDragged = true;
+            isPegDroppableOnTheHoleBelow = true;
           });
         } else {
           setState(() {
-            hoverIndex = index;
-            isHovering = true;
-            isValidHover = false;
+            indexOfPegBeingDragged = index;
+            isPegBeingDragged = true;
+            isPegDroppableOnTheHoleBelow = false;
           });
         }
 
-        return isAcceptable;
+        return isPegDroppableInHole;
       },
       onLeave: (peg) {
         setState(() {
-          isHovering = false;
+          isPegBeingDragged = false;
         });
       },
       onAccept: (peg) {
-        print("Peg inserted at $peg");
+        print("Peg inserted at $peg.");
         int pegToRemoveRow = (peg.row + index.row) ~/ 2;
         int pegToRemoveColumn = (peg.column + index.column) ~/ 2;
 
@@ -88,13 +89,13 @@ class _BoardState extends State<Board> {
           boardConfiguration.pegs[peg.row][peg.column] = false;
           boardConfiguration.pegs[pegToRemoveRow][pegToRemoveColumn] = false;
           boardConfiguration.pegs[index.row][index.column] = true;
-          isHovering = false;
+          isPegBeingDragged = false;
 
           isGameOver = boardConfiguration.checkGameOver();
           if (isGameOver) {
             print("Game Over!");
           } else {
-            print("Waiting for next step");
+            print("Waiting for next move.");
           }
         });
       },
