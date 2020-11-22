@@ -45,12 +45,6 @@ class _BoardState extends State<Board> {
                 color: color,
                 shape: BoxShape.circle,
               ),
-              child: Center(
-                child: SizedBox(
-                    width: size.width * 0.5,
-                    height: size.height * 0.5,
-                    child: Container()),
-              ),
             ),
           ),
         );
