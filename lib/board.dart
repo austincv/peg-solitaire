@@ -159,42 +159,57 @@ class _BoardState extends State<Board> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(kTitle),
-          actions: [
-            Center(child: kVersion),
-            isGameOver
-                ? RaisedButton(
-                    color: Colors.grey.shade900,
-                    onPressed: () {
-                      setState(() {
-                        resetBoard();
-                      });
-                    },
-                    child: FittedBox(
-                        child: Icon(
-                      Icons.autorenew,
-                      color: kColorResetGameOver,
-                    )),
-                  )
-                : RaisedButton(
-                    color: Colors.grey.shade900,
-                    onPressed: () {
-                      setState(() {
-                        resetBoard();
-                      });
-                    },
-                    child: FittedBox(
+      appBar: AppBar(
+        title: Text(kTitle),
+        actions: [
+          Center(child: kVersion),
+          isGameOver
+              ? RaisedButton(
+                  color: Colors.grey.shade900,
+                  onPressed: () {
+                    setState(() {
+                      resetBoard();
+                    });
+                  },
+                  child: FittedBox(
                       child: Icon(
-                        Icons.autorenew,
-                        color: kColorReset,
-                      ),
+                    Icons.autorenew,
+                    color: kColorResetGameOver,
+                  )),
+                )
+              : RaisedButton(
+                  color: Colors.grey.shade900,
+                  onPressed: () {
+                    setState(() {
+                      resetBoard();
+                    });
+                  },
+                  child: FittedBox(
+                    child: Icon(
+                      Icons.autorenew,
+                      color: kColorReset,
                     ),
-                  )
-          ],
-        ),
-        body: LayoutBuilder(
-          builder: buildLayout,
-        ));
+                  ),
+                )
+        ],
+      ),
+      body: LayoutBuilder(
+        builder: buildLayout,
+      ),
+      floatingActionButton: isGameOver
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                setState(() {
+                  resetBoard();
+                });
+              },
+              backgroundColor: kColorPeg,
+              icon: Icon(Icons.autorenew),
+              label: Text(
+                'Game Over',
+              ),
+            )
+          : null,
+    );
   }
 }
