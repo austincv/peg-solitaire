@@ -37,6 +37,7 @@ class _BoardState extends State<Board> {
           }
         }
         return Hole(
+          index: holeIndex,
           size: size,
           color: color,
         );
@@ -88,14 +89,15 @@ class _BoardState extends State<Board> {
     );
   }
 
-  Widget buildHoleWithPegAtIndex(Index index, Size size) {
+  Widget buildHoleWithPegAtIndex(Index holeIndex, Size size) {
     double reduceFactor = 0.8;
     Size pegSize = Size(size.width * reduceFactor, size.height * reduceFactor);
 
     return Hole(
+      index: holeIndex,
       size: size,
       color: kColorHole,
-      peg: Peg(index, pegSize),
+      peg: Peg(holeIndex, pegSize),
     );
   }
 
