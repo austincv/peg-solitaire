@@ -1,10 +1,10 @@
 {
-    "name": "peg_solitaire",
-    "short_name": "peg_solitaire",
+    "name": "Peg Solitaire",
+    "short_name": "Peg Solitaire",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
+    "background_color": "#222831",
+    "theme_color": "#222831",
     "description": "Peg Solitaire",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
@@ -12,12 +12,14 @@
         {
             "src": "icons/Icon-192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "icons/Icon-512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }
