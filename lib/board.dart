@@ -133,6 +133,7 @@ class _BoardState extends State<Board> {
 
   void resetBoard() {
     boardConfiguration = boardFactory.get(0);
+    isGameOver = false;
   }
 
   Widget buildBoard(Size size) {
@@ -180,11 +181,10 @@ class _BoardState extends State<Board> {
           actions: [
             isGameOver
                 ? RaisedButton(
-                    color: kGameOver,
+                    color: kColorResetGameOver,
                     onPressed: () {
                       setState(() {
                         resetBoard();
-                        isGameOver = false;
                       });
                     },
                     child: FittedBox(
@@ -193,7 +193,7 @@ class _BoardState extends State<Board> {
                     )),
                   )
                 : RaisedButton(
-                    color: kTitleButton,
+                    color: kColorReset,
                     onPressed: () {
                       setState(() {
                         resetBoard();
