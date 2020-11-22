@@ -3,6 +3,7 @@ import 'package:peg_solitaire/constants.dart';
 
 import 'boards/configuration.dart';
 import 'boards/factory.dart';
+import 'boards/hole.dart';
 import 'boards/peg.dart';
 
 class Board extends StatefulWidget {
@@ -18,50 +19,41 @@ class _BoardState extends State<Board> {
   bool isGameOver = false;
   bool isPegBeingDragged = false;
   bool isPegDroppableOnTheHoleBelow = false;
+  // TODO: multiple pegs can be dragged?
   Index indexOfPegBeingDragged;
 
-  Widget buildHoleAtIndex(Index index, Size size) {
+  Widget buildHoleAtIndex(Index holeIndex, Size size) {
     /// Create a drag target on which pegs can be dropped.
     /// This function defines which pegs can be accepted
     /// according to the rules of peg solitaire
     return DragTarget<Index>(
       builder: (context, candidateData, rejectedData) {
-        double paddingFactor = 0.05;
         Color color = kColorHole;
         if (isPegBeingDragged) {
-          if (index == indexOfPegBeingDragged) {
+          if (holeIndex == indexOfPegBeingDragged) {
             color = isPegDroppableOnTheHoleBelow
                 ? kColorHoleDroppable
                 : kColorHoleNotDroppable;
           }
         }
-        return SizedBox(
-          width: size.width,
-          height: size.height,
-          child: Padding(
-            padding: EdgeInsets.all(size.width * paddingFactor),
-            child: Container(
-              decoration: new BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
+        return Hole(
+          size: size,
+          color: color,
         );
       },
-      onWillAccept: (peg) {
+      onWillAccept: (pegIndex) {
         bool isPegDroppableInHole =
-            boardConfiguration.checkIfPegIsDroppableInHole(peg, index);
+            boardConfiguration.checkIfPegIsDroppableInHole(pegIndex, holeIndex);
 
         if (isPegDroppableInHole) {
           setState(() {
-            indexOfPegBeingDragged = index;
+            indexOfPegBeingDragged = holeIndex;
             isPegBeingDragged = true;
             isPegDroppableOnTheHoleBelow = true;
           });
         } else {
           setState(() {
-            indexOfPegBeingDragged = index;
+            indexOfPegBeingDragged = holeIndex;
             isPegBeingDragged = true;
             isPegDroppableOnTheHoleBelow = false;
           });
@@ -69,20 +61,20 @@ class _BoardState extends State<Board> {
 
         return isPegDroppableInHole;
       },
-      onLeave: (peg) {
+      onLeave: (pegIndex) {
         setState(() {
           isPegBeingDragged = false;
         });
       },
-      onAccept: (peg) {
-        print("Peg inserted at $peg.");
-        int pegToRemoveRow = (peg.row + index.row) ~/ 2;
-        int pegToRemoveColumn = (peg.column + index.column) ~/ 2;
+      onAccept: (pegIndex) {
+        print("Peg inserted at $pegIndex.");
+        int pegToRemoveRow = (pegIndex.row + holeIndex.row) ~/ 2;
+        int pegToRemoveColumn = (pegIndex.column + holeIndex.column) ~/ 2;
 
         setState(() {
-          boardConfiguration.pegs[peg.row][peg.column] = false;
+          boardConfiguration.pegs[pegIndex.row][pegIndex.column] = false;
           boardConfiguration.pegs[pegToRemoveRow][pegToRemoveColumn] = false;
-          boardConfiguration.pegs[index.row][index.column] = true;
+          boardConfiguration.pegs[holeIndex.row][holeIndex.column] = true;
           isPegBeingDragged = false;
 
           isGameOver = boardConfiguration.checkGameOver();
@@ -97,24 +89,13 @@ class _BoardState extends State<Board> {
   }
 
   Widget buildHoleWithPegAtIndex(Index index, Size size) {
-    double paddingFactor = 0.05;
     double reduceFactor = 0.8;
     Size pegSize = Size(size.width * reduceFactor, size.height * reduceFactor);
 
-    return SizedBox.fromSize(
+    return Hole(
       size: size,
-      child: Padding(
-        padding: EdgeInsets.all(size.width * paddingFactor),
-        child: Container(
-          decoration: new BoxDecoration(
-            color: kColorHole,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Peg(index, pegSize),
-          ),
-        ),
-      ),
+      color: kColorHole,
+      peg: Peg(index, pegSize),
     );
   }
 
