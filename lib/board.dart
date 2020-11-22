@@ -96,7 +96,7 @@ class _BoardState extends State<Board> {
     return Hole(
       index: holeIndex,
       size: size,
-      color: kColorHole,
+      color: isGameOver ? kColorHoleGameOver : kColorHole,
       peg: Peg(holeIndex, pegSize),
     );
   }
@@ -162,9 +162,10 @@ class _BoardState extends State<Board> {
         appBar: AppBar(
           title: Text(kTitle),
           actions: [
+            Center(child: kVersion),
             isGameOver
                 ? RaisedButton(
-                    color: kColorResetGameOver,
+                    color: Colors.grey.shade900,
                     onPressed: () {
                       setState(() {
                         resetBoard();
@@ -173,10 +174,11 @@ class _BoardState extends State<Board> {
                     child: FittedBox(
                         child: Icon(
                       Icons.autorenew,
+                      color: kColorResetGameOver,
                     )),
                   )
                 : RaisedButton(
-                    color: kColorReset,
+                    color: Colors.grey.shade900,
                     onPressed: () {
                       setState(() {
                         resetBoard();
@@ -185,6 +187,7 @@ class _BoardState extends State<Board> {
                     child: FittedBox(
                       child: Icon(
                         Icons.autorenew,
+                        color: kColorReset,
                       ),
                     ),
                   )
