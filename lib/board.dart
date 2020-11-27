@@ -90,7 +90,7 @@ class _BoardState extends State<Board> {
   }
 
   Widget buildHoleWithPegAtIndex(Index holeIndex, Size size) {
-    double reduceFactor = 0.8;
+    double reduceFactor = 1;
     Size pegSize = Size(size.width * reduceFactor, size.height * reduceFactor);
 
     return Hole(
@@ -145,7 +145,7 @@ class _BoardState extends State<Board> {
   }
 
   Widget buildLayout(context, constraints) {
-    const reduceFactor = 0.9;
+    const reduceFactor = 0.85;
     Size size = Size.square((constraints.maxWidth < constraints.maxHeight)
         ? constraints.maxWidth * reduceFactor
         : constraints.maxHeight * reduceFactor);
@@ -165,7 +165,7 @@ class _BoardState extends State<Board> {
           Center(child: kVersion),
           isGameOver
               ? RaisedButton(
-                  color: Colors.grey.shade900,
+                  color: kColorBackground,
                   onPressed: () {
                     setState(() {
                       resetBoard();
@@ -178,7 +178,7 @@ class _BoardState extends State<Board> {
                   )),
                 )
               : RaisedButton(
-                  color: Colors.grey.shade900,
+                  color: kColorBackground,
                   onPressed: () {
                     setState(() {
                       resetBoard();

@@ -26,7 +26,7 @@ class Peg extends StatelessWidget {
         height: size.height,
         child: Card(
           color: kColorPeg,
-          elevation: 4,
+          elevation: 10,
           shape: CircleBorder(),
         ),
       ),
