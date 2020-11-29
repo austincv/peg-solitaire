@@ -6,6 +6,7 @@ import 'dart:math';
 class Hole {
   final Point position;
   bool hasPeg;
+  bool isSelected;
 
   Hole(this.position, this.hasPeg);
 }
@@ -19,16 +20,16 @@ class Configuration {
   Configuration(this.name, this.holes);
 }
 
-/// [State] is used by the [Game] to keep track of the movements of pegs.
+/// [GameState] is used by the [Game] to keep track of the movements of pegs.
 /// State keeps a copy of the configuration so that it can also reset to init.
-class State {
+class GameState {
   int _numberOfRows;
   int _numberOfColumns;
 
   final Configuration configuration;
   Map<Point, Hole> holes;
 
-  State(this.configuration) {
+  GameState(this.configuration) {
     _setHoles();
     _setSizeOfBoard();
   }
@@ -56,8 +57,9 @@ class State {
       yMax = yMax > hole.position.y ? yMax : hole.position.y;
     }
 
-    _numberOfRows = xMax + 1;
-    _numberOfColumns = yMax + 1;
+    _numberOfColumns = xMax + 1;
+    _numberOfRows = yMax + 1;
+    print('Size of board rows $_numberOfRows , columns $_numberOfColumns');
   }
 
   int getNumberOfRows() => _numberOfRows;
@@ -65,12 +67,12 @@ class State {
 }
 
 /// [Game] knows the rules of the game.
-/// It has [State] which is updated to keep track of the game.
+/// It has [GameState] which is updated to keep track of the game.
 class Game {
-  State _state;
+  GameState state;
 
   Game(Configuration configuration) {
-    this._state = State(configuration);
+    this.state = GameState(configuration);
   }
 
   bool movePegFromPositionToPosition(Point startPosition, Point endPosition) {
@@ -81,17 +83,17 @@ class Game {
     /// 5. if position between start and end position has a Peg to remove
     ///    then remove the middle peg
     ///    then move peg from start to end position
-    if (_state.holes.containsKey(startPosition) &
-        _state.holes.containsKey(endPosition)) {
-      if (_state.holes[startPosition].hasPeg &
-          !_state.holes[endPosition].hasPeg) {
+    if (state.holes.containsKey(startPosition) &&
+        state.holes.containsKey(endPosition)) {
+      if (state.holes[startPosition].hasPeg &&
+          !state.holes[endPosition].hasPeg) {
         if (startPosition.distanceTo(endPosition) == 2) {
           Point point = startPosition + endPosition;
           Point middle = Point(point.x ~/ 2, point.y ~/ 2);
-          if (_state.holes[middle].hasPeg) {
-            _state.holes[middle].hasPeg = false;
-            _state.holes[endPosition].hasPeg = true;
-            _state.holes[startPosition].hasPeg = false;
+          if (state.holes[middle].hasPeg) {
+            state.holes[middle].hasPeg = false;
+            state.holes[endPosition].hasPeg = true;
+            state.holes[startPosition].hasPeg = false;
             return true;
           }
         }

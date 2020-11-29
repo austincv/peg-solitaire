@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:peg_solitaire/model/view.dart';
 
 import 'constants.dart';
-import 'menu.dart';
 
 class PegSolitaire extends StatefulWidget {
   @override
@@ -15,18 +14,9 @@ class _PegSolitaireState extends State<PegSolitaire> {
     final title = kTitle;
 
     return MaterialApp(
-        title: title,
-        home: Menu(),
-        theme: ThemeData(
-          primaryTextTheme: TextTheme(
-              headline6: TextStyle(
-            color: Colors.grey,
-          )),
-          appBarTheme: AppBarTheme(
-            color: kColorBackground,
-          ),
-          scaffoldBackgroundColor: kColorBackground,
-        ));
+      title: title,
+      home: GameScaffold(),
+    );
   }
 }
 
