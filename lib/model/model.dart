@@ -52,7 +52,6 @@ class GameState {
     int xMax = 0;
     int yMax = 0;
     for (Hole hole in configuration.holes) {
-      holes[hole.position] = Hole(hole.position, hole.hasPeg);
       xMax = xMax > hole.position.x ? xMax : hole.position.x;
       yMax = yMax > hole.position.y ? yMax : hole.position.y;
     }
@@ -119,7 +118,9 @@ void main() {
   Configuration config = Configuration("test", holes);
   Game game = Game(config);
 
-  game.movePegFromPositionToPosition(Point(0, 1), Point(0, 3));
-  Point point = (Point(0, 1) + Point(0, 3));
-  print(Point(point.x ~/ 2, point.y ~/ 2));
+  Point start = Point(0, 1);
+  Point end = Point(0, 3);
+  bool move = game.movePegFromPositionToPosition(Point(0, 0), Point(0, 2));
+  print('Move $start to $end : $move');
+  print(game.state.holes);
 }
