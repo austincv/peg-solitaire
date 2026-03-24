@@ -7,13 +7,13 @@ import 'peg.dart';
 class Hole extends StatefulWidget {
   final Index index;
   final Size size;
-  final Color color;
-  final Peg peg;
+  final Color? color;
+  final Peg? peg;
 
-  Hole(
-      {Key key,
-      @required this.index,
-      @required this.size,
+  const Hole(
+      {Key? key,
+      required this.index,
+      required this.size,
       this.color,
       this.peg})
       : super(key: key);
@@ -35,7 +35,7 @@ class _HoleState extends State<Hole> {
         child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
           decoration: BoxDecoration(
-            color: widget.color == null ? kColorHole : widget.color,
+            color: widget.color ?? kColorHole,
             shape: BoxShape.circle,
           ),
           child: Center(
