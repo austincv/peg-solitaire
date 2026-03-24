@@ -14,13 +14,13 @@ class Board extends StatefulWidget {
 class _BoardState extends State<Board> {
   BoardFactory boardFactory = BoardFactory();
 
-  BoardConfiguration boardConfiguration;
+  late BoardConfiguration boardConfiguration;
 
   bool isGameOver = false;
   bool isPegBeingDragged = false;
   bool isPegDroppableOnTheHoleBelow = false;
   // TODO: multiple pegs can be dragged?
-  Index indexOfPegBeingDragged;
+  late Index indexOfPegBeingDragged;
 
   Widget buildHoleAtIndex(Index holeIndex, Size size) {
     /// Create a drag target on which pegs can be dropped.
@@ -43,6 +43,7 @@ class _BoardState extends State<Board> {
         );
       },
       onWillAccept: (pegIndex) {
+        if (pegIndex == null) return false;
         bool isPegDroppableInHole =
             boardConfiguration.checkIfPegIsDroppableInHole(pegIndex, holeIndex);
 
@@ -114,6 +115,12 @@ class _BoardState extends State<Board> {
         : nothing;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    boardConfiguration = boardFactory.get(0);
+  }
+
   void resetBoard() {
     boardConfiguration = boardFactory.get(0);
     isGameOver = false;
@@ -123,22 +130,20 @@ class _BoardState extends State<Board> {
     Size boxSize = Size(size.width / boardConfiguration.numberOfColumns,
         size.height / boardConfiguration.numberOfRows);
 
-    List<Row> rows = new List<Row>(boardConfiguration.numberOfRows);
+    final rows = <Row>[];
     for (int rowIndex = 0;
         rowIndex < boardConfiguration.numberOfRows;
         rowIndex++) {
-      List<Widget> widgets =
-          new List<Widget>(boardConfiguration.numberOfColumns);
+      final widgets = <Widget>[];
       for (int columnIndex = 0;
           columnIndex < boardConfiguration.numberOfColumns;
           columnIndex++) {
-        widgets[columnIndex] =
-            buildBoxAtIndex(Index(rowIndex, columnIndex), boxSize);
+        widgets.add(buildBoxAtIndex(Index(rowIndex, columnIndex), boxSize));
       }
-      rows[rowIndex] = Row(
+      rows.add(Row(
         children: widgets,
         mainAxisAlignment: MainAxisAlignment.center,
-      );
+      ));
     }
 
     return Column(children: rows, mainAxisAlignment: MainAxisAlignment.center);
@@ -154,31 +159,14 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
-    if (boardConfiguration == null) {
-      boardConfiguration = boardFactory.get(0);
-    }
-
     return Scaffold(
         appBar: AppBar(
           title: Text(kTitle),
           actions: [
             Center(child: kVersion),
-            isGameOver
-                ? RaisedButton(
-                    color: Colors.grey.shade900,
-                    onPressed: () {
-                      setState(() {
-                        resetBoard();
-                      });
-                    },
-                    child: FittedBox(
-                        child: Icon(
-                      Icons.autorenew,
-                      color: kColorResetGameOver,
-                    )),
-                  )
-                : RaisedButton(
-                    color: Colors.grey.shade900,
+            ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade900),
                     onPressed: () {
                       setState(() {
                         resetBoard();
@@ -187,7 +175,7 @@ class _BoardState extends State<Board> {
                     child: FittedBox(
                       child: Icon(
                         Icons.autorenew,
-                        color: kColorReset,
+                        color: isGameOver ? kColorResetGameOver : kColorReset,
                       ),
                     ),
                   )

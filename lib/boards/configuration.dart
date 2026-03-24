@@ -5,7 +5,8 @@ class Index {
   Index(this.row, this.column);
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
+    if (other is! Index) return false;
     return ((other.row == row) & (other.column == column));
   }
 
